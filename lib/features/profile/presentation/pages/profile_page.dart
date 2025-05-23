@@ -110,6 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.white70,
+                                          letterSpacing: 0.5,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),

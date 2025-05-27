@@ -1,4 +1,3 @@
-// lib/features/profile/presentation/pages/profile_page.dart (DEBUG VERSION)
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/snackbar_utils.dart';
@@ -31,7 +30,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _scrollListener() {
-    // Show title when header is collapsed (scroll > 200)
     final shouldShow = _scrollController.offset > 200;
     if (shouldShow != _showAppBarTitle) {
       setState(() {
@@ -71,8 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       pinned: true,
                       backgroundColor: const Color(0xFF667eea),
                       automaticallyImplyLeading: false,
-
-                      // TITLE HANYA MUNCUL SAAT COLLAPSED
                       title: _showAppBarTitle
                           ? Row(
                               children: [
@@ -120,8 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             )
-                          : null, // TITLE KOSONG SAAT EXPANDED
-
+                          : null,
                       flexibleSpace: FlexibleSpaceBar(
                         background: Container(
                           decoration: const BoxDecoration(
@@ -132,8 +127,6 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const SizedBox(height: 60),
-
-                                // Profile Avatar (Large)
                                 Hero(
                                   tag: 'profile_avatar',
                                   child: Container(
@@ -167,10 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                 ),
-
                                 const SizedBox(height: 16),
-
-                                // User Name (Large)
                                 Text(
                                   state.userName,
                                   style: const TextStyle(
@@ -180,10 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-
                                 const SizedBox(height: 8),
-
-                                // User Email (Large)
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
@@ -210,13 +197,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   ];
                 },
                 body: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.fromLTRB(
+                    16.0,
+                    16.0,
+                    16.0,
+                    16.0 + MediaQuery.of(context).padding.bottom + 32.0,
+                  ),
                   child: Column(
                     children: [
-                      // Account Section
                       _buildSectionTitle(context, 'Account'),
                       const SizedBox(height: 8),
-
                       _buildMenuCard(context, [
                         _buildMenuItem(
                           context,
@@ -248,13 +238,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                       ]),
-
                       const SizedBox(height: 24),
-
-                      // Payments Section
                       _buildSectionTitle(context, 'Payments'),
                       const SizedBox(height: 8),
-
                       _buildMenuCard(context, [
                         _buildMenuItem(
                           context,
@@ -276,13 +262,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                       ]),
-
                       const SizedBox(height: 24),
-
-                      // Support Section
                       _buildSectionTitle(context, 'Support'),
                       const SizedBox(height: 8),
-
                       _buildMenuCard(context, [
                         _buildMenuItem(
                           context,
@@ -314,12 +296,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                       ]),
-
                       const SizedBox(height: 32),
-
-                      // Logout Button
                       _buildLogoutButton(context, state),
-
                       const SizedBox(height: 32),
                     ],
                   ),

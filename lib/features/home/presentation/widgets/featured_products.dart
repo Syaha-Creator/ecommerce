@@ -296,6 +296,7 @@ class FeaturedProducts extends StatelessWidget {
                 ],
               ),
             ),
+            const Spacer(),
             // Add to Cart Button - No Spacer, directly after content
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),

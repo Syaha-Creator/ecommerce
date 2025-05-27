@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                       },
                     );
                   }
-                  return const SizedBox(height: 120);
+                  return const SizedBox(height: 10);
                 },
               ),
               // Updated FeaturedProducts with real data

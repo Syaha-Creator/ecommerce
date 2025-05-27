@@ -71,7 +71,7 @@ class _HomeBannerState extends State<HomeBanner> {
   Widget build(BuildContext context) {
     return Container(
       height: 180,
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16, top: 16),
       child: Stack(
         children: [
           PageView.builder(

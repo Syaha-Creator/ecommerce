@@ -1,28 +1,66 @@
 // lib/app/router.dart
 import 'package:flutter/material.dart';
+import '../features/product/presentation/pages/product_pages.dart';
 import '../features/splash/presentation/pages/splash_page.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/register_page.dart';
 import '../features/home/presentation/pages/home_page.dart';
+import '../features/product/presentation/pages/product_detail_page.dart';
+import '../features/product/presentation/pages/product_search_page.dart';
 
 /// Kelas router untuk navigasi di aplikasi
-///
-/// Ini adalah implementasi manual yang bisa digunakan
-/// sampai kita mengimplementasikan auto_route dengan benar
 class AppRouter {
   /// Metode untuk menghasilkan route berdasarkan nama route
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const SplashPage());
+
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginPage());
+
       case '/register':
         return MaterialPageRoute(builder: (_) => const RegisterPage());
+
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomePage());
+
+      // Product Routes
+      case '/products':
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => ProductsPage(
+            categoryId: args?['categoryId'],
+            categoryName: args?['categoryName'],
+          ),
+        );
+
+      case '/product-detail':
+        final productId = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => ProductDetailPage(productId: productId),
+        );
+
+      case '/product-search':
+        return MaterialPageRoute(builder: (_) => const ProductSearchPage());
+
+      // Cart Route (placeholder for now)
+      case '/cart':
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            appBar: AppBar(title: const Text('Cart')),
+            body: const Center(child: Text('Cart Page - Coming Soon')),
+          ),
+        );
+
       default:
-        return MaterialPageRoute(builder: (_) => const SplashPage());
+        return MaterialPageRoute(
+          builder: (_) => Scaffold(
+            body: Center(
+              child: Text('No route defined for ${settings.name}'),
+            ),
+          ),
+        );
     }
   }
 
@@ -56,63 +94,5 @@ class AppRouter {
   /// Metode untuk kembali ke halaman sebelumnya
   void goBack(BuildContext context, [dynamic result]) {
     Navigator.of(context).pop(result);
-  }
-
-  /// Metode untuk delegate router
-  /// Ini adalah metode sementara sampai kita mengimplementasikan auto_route
-  RouterDelegate<Object> delegate() {
-    return _AppRouterDelegate();
-  }
-
-  /// Metode untuk parser informasi route
-  /// Ini adalah metode sementara sampai kita mengimplementasikan auto_route
-  RouteInformationParser<Object> defaultRouteParser() {
-    return _AppRouteInformationParser();
-  }
-}
-
-/// Implementasi RouterDelegate untuk NavigatorAPI 2.0
-/// Ini adalah implementasi sementara sampai kita mengimplementasikan auto_route
-class _AppRouterDelegate extends RouterDelegate<Object>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<Object> {
-  @override
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Navigator(
-      key: navigatorKey,
-      pages: const [MaterialPage(child: SplashPage())],
-      onPopPage: (route, result) {
-        if (!route.didPop(result)) {
-          return false;
-        }
-        return true;
-      },
-    );
-  }
-
-  @override
-  Future<void> setNewRoutePath(Object configuration) async {
-    // Implementasi sederhana untuk saat ini
-  }
-}
-
-/// Implementasi RouteInformationParser untuk NavigatorAPI 2.0
-/// Ini adalah implementasi sementara sampai kita mengimplementasikan auto_route
-class _AppRouteInformationParser extends RouteInformationParser<Object> {
-  @override
-  Future<Object> parseRouteInformation(
-    RouteInformation routeInformation,
-  ) async {
-    return routeInformation.location;
-  }
-
-  @override
-  RouteInformation? restoreRouteInformation(Object configuration) {
-    if (configuration is String) {
-      return RouteInformation(location: configuration);
-    }
-    return null;
   }
 }

@@ -1,24 +1,20 @@
-// lib/features/home/presentation/widgets/category_slider.dart (perbaikan)
+// lib/features/home/presentation/widgets/category_slider.dart
 import 'package:flutter/material.dart';
 import '../../../../core/theme/dimensions.dart';
+import '../../../product/domain/entities/category.dart';
 
 class CategorySlider extends StatelessWidget {
-  const CategorySlider({Key? key}) : super(key: key);
+  final List<Category> categories;
+  final Function(Category) onCategoryTap;
+
+  const CategorySlider({
+    Key? key,
+    required this.categories,
+    required this.onCategoryTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Data kategori sampel
-    final categories = [
-      {'name': 'Smartphones', 'icon': Icons.smartphone},
-      {'name': 'Laptops', 'icon': Icons.laptop},
-      {'name': 'Audio', 'icon': Icons.headphones},
-      {'name': 'Wearables', 'icon': Icons.watch},
-      {'name': 'Accessories', 'icon': Icons.cable},
-      {'name': 'TVs', 'icon': Icons.tv},
-      {'name': 'Cameras', 'icon': Icons.camera_alt},
-      {'name': 'Gaming', 'icon': Icons.sports_esports},
-    ];
-
     return Container(
       padding:
           const EdgeInsets.symmetric(vertical: AppDimensions.paddingMedium),
@@ -40,7 +36,8 @@ class CategorySlider extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    // TODO: Navigate to categories page
+                    // Navigate to categories tab
+                    // This should be handled by parent widget
                   },
                   child: const Text('See All'),
                 ),
@@ -49,7 +46,7 @@ class CategorySlider extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 120, // Tingkatkan sedikit untuk layout yang lebih baik
+            height: 120,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(
@@ -58,12 +55,10 @@ class CategorySlider extends StatelessWidget {
               itemBuilder: (context, index) {
                 final category = categories[index];
                 return Container(
-                  width: 90, // Lebarkan untuk nama kategori yang lebih panjang
+                  width: 90,
                   margin: const EdgeInsets.only(right: 16),
                   child: InkWell(
-                    onTap: () {
-                      // TODO: Navigate to category products
-                    },
+                    onTap: () => onCategoryTap(category),
                     borderRadius: BorderRadius.circular(12),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +75,7 @@ class CategorySlider extends StatelessWidget {
                           ),
                           child: Center(
                             child: Icon(
-                              category['icon'] as IconData,
+                              _getCategoryIcon(category.name),
                               color: Theme.of(context).colorScheme.primary,
                               size: 28,
                             ),
@@ -88,7 +83,7 @@ class CategorySlider extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          category['name'] as String,
+                          category.name,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -108,5 +103,19 @@ class CategorySlider extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  IconData _getCategoryIcon(String categoryName) {
+    final iconMap = {
+      'Electronics': Icons.devices,
+      'Fashion': Icons.checkroom,
+      'Home & Living': Icons.home,
+      'Beauty & Health': Icons.face,
+      'Sports & Outdoor': Icons.sports_basketball,
+      'Food & Drinks': Icons.fastfood,
+      'Books': Icons.book,
+      'Toys': Icons.toys,
+    };
+    return iconMap[categoryName] ?? Icons.category;
   }
 }

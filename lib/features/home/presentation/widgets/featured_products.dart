@@ -1,54 +1,37 @@
-// lib/features/home/presentation/widgets/featured_products.dart (FINAL CLEAN)
+// lib/features/home/presentation/widgets/featured_products.dart
 import 'package:flutter/material.dart';
 import '../../../../core/theme/dimensions.dart';
+import '../../../../core/theme/colors.dart';
+import '../../../../core/utils/snackbar_utils.dart';
+import '../../../product/domain/entities/product.dart';
 
 class FeaturedProducts extends StatelessWidget {
   final String title;
+  final List<Product> products;
+  final Function(Product) onProductTap;
+  final VoidCallback? onViewAll;
 
   const FeaturedProducts({
     Key? key,
     required this.title,
+    required this.products,
+    required this.onProductTap,
+    this.onViewAll,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Data produk sampel
-    final products = [
-      {
-        'id': 1,
-        'name': 'Smartphone X Pro',
-        'price': 5999000,
-        'image': 'https://via.placeholder.com/300',
-        'discount': 10,
-      },
-      {
-        'id': 2,
-        'name': 'Laptop Ultra Slim',
-        'price': 12500000,
-        'image': 'https://via.placeholder.com/300',
-        'discount': 0,
-      },
-      {
-        'id': 3,
-        'name': 'Wireless Earbuds',
-        'price': 1500000,
-        'image': 'https://via.placeholder.com/300',
-        'discount': 20,
-      },
-      {
-        'id': 4,
-        'name': 'Smart Watch',
-        'price': 2500000,
-        'image': 'https://via.placeholder.com/300',
-        'discount': 0,
-      },
-    ];
+    if (products.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
+      color: Colors.white,
       padding: const EdgeInsets.only(
         top: AppDimensions.paddingMedium,
-        bottom: AppDimensions.paddingLarge,
+        bottom: AppDimensions.paddingMedium,
       ),
+      margin: const EdgeInsets.only(top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -58,256 +41,35 @@ class FeaturedProducts extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                if (onViewAll != null)
+                  TextButton(
+                    onPressed: onViewAll,
+                    child: const Text('View All'),
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // TODO: Navigasi ke halaman produk
-                  },
-                  child: const Text('Lihat Semua'),
-                ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-
-          // Product List dengan Fixed Height
-          Container(
-            height: 320,
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 280, // Adjusted height for better fit
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(
                   horizontal: AppDimensions.paddingMedium),
-              itemCount: products.length,
+              clipBehavior: Clip.none, // Prevent clipping of card shadow
+              itemCount: products.length > 10 ? 10 : products.length,
               itemBuilder: (context, index) {
                 final product = products[index];
-
-                // Konversi ke double secara eksplisit
-                final discount = product['discount'] as int? ?? 0;
-                final hasDiscount = discount > 0;
-                final price = (product['price'] as int? ?? 0).toDouble();
-                final discountPrice =
-                    hasDiscount ? price * (100 - discount) / 100 : price;
-
                 return Container(
-                  width: 180,
-                  margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                  child: Material(
-                    elevation: 4,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          // TODO: Navigasi ke detail produk
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Gambar Produk dengan Fixed Height
-                            Container(
-                              height: 140,
-                              width: double.infinity,
-                              decoration: const BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12),
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(12),
-                                      topRight: Radius.circular(12),
-                                    ),
-                                    child: Image.network(
-                                      product['image'] as String? ??
-                                          'https://via.placeholder.com/300',
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: 140,
-                                      errorBuilder: (_, __, ___) => Container(
-                                        color: Colors.grey[200],
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.image_not_supported,
-                                            size: 48,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Badge Diskon
-                                  if (hasDiscount)
-                                    Positioned(
-                                      top: 8,
-                                      left: 8,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          '-$discount%',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                  // Tombol Wishlist
-                                  Positioned(
-                                    top: 8,
-                                    right: 8,
-                                    child: Container(
-                                      width: 32,
-                                      height: 32,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.1),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: IconButton(
-                                        padding: EdgeInsets.zero,
-                                        icon: const Icon(Icons.favorite_border,
-                                            size: 18),
-                                        onPressed: () {
-                                          // TODO: Tambahkan ke wishlist
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Content Area dengan Fixed Height
-                            Container(
-                              height: 150,
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12.0),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(12),
-                                  bottomRight: Radius.circular(12),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Nama Produk dengan Fixed Height
-                                  SizedBox(
-                                    height: 40,
-                                    child: Text(
-                                      product['name'] as String? ??
-                                          'Nama Produk',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            height: 1.2,
-                                          ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 8),
-
-                                  // Spacer untuk push price ke bawah
-                                  const Spacer(),
-
-                                  // Harga Area
-                                  if (hasDiscount)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          'Rp ${_formatPrice(price)}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                color: Colors.grey,
-                                              ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          'Rp ${_formatPrice(discountPrice)}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
-                                              ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    )
-                                  else
-                                    Text(
-                                      'Rp ${_formatPrice(price)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                          ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  width: 180, // Increased width for better content fit
+                  margin: const EdgeInsets.only(right: 12),
+                  child: _buildCompactProductCard(context, product),
                 );
               },
             ),
@@ -317,24 +79,270 @@ class FeaturedProducts extends StatelessWidget {
     );
   }
 
-  // Helper method untuk format harga
+  Widget _buildCompactProductCard(BuildContext context, Product product) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: () => onProductTap(product),
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Section - Fixed height
+            SizedBox(
+              height: 120,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    child: Container(
+                      color: Colors.grey[200],
+                      child: product.mainImage.isNotEmpty
+                          ? Image.network(
+                              product.mainImage,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.image_not_supported,
+                                color: Colors.grey,
+                                size: 40,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.image,
+                              color: Colors.grey,
+                              size: 40,
+                            ),
+                    ),
+                  ),
+                  // Discount Badge
+                  if (product.hasDiscount)
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '-${product.discountPercentage}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  // Favorite Button
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(
+                          Icons.favorite_border,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          // TODO: Toggle favorite
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Content Section - Adjusted for consistent spacing
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product Name & Brand
+                  SizedBox(
+                    height: 48,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                          ),
+                        ),
+                        if (product.brand != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            product.brand!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // Rating
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        size: 12,
+                        color: Colors.amber[700],
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        product.rating.toStringAsFixed(1),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Expanded(
+                        child: Text(
+                          '(${product.reviewCount})',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[600],
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Price Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (product.hasDiscount) ...[
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.local_offer,
+                              size: 12,
+                              color: Colors.red,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              _formatPrice(product.finalPrice),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                        Text(
+                          _formatPrice(product.price),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.grey,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ] else
+                        Text(
+                          _formatPrice(product.finalPrice),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            // Add to Cart Button - No Spacer, directly after content
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+              child: SizedBox(
+                height: 30,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    showCustomSnackBar(
+                      context,
+                      content: '${product.name} added to cart',
+                      action: SnackBarAction(
+                        label: 'VIEW CART',
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/cart');
+                        },
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: const Text(
+                    'Add to Cart',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _formatPrice(double price) {
-    if (price >= 1000000) {
-      final millions = price / 1000000;
-      if (millions == millions.roundToDouble()) {
-        return '${millions.round()}M';
-      } else {
-        return '${millions.toStringAsFixed(1)}M';
-      }
-    } else if (price >= 1000) {
-      final thousands = price / 1000;
-      if (thousands == thousands.roundToDouble()) {
-        return '${thousands.round()}K';
-      } else {
-        return '${thousands.toStringAsFixed(0)}K';
-      }
-    } else {
-      return price.round().toString();
-    }
+    final formatter = price.toStringAsFixed(0);
+    final result = formatter.replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
+    return 'Rp $result';
   }
 }

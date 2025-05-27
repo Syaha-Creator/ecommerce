@@ -27,13 +27,14 @@ class RelatedProducts extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 320,
+      height: 370,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(
           horizontal: AppDimensions.paddingMedium,
         ),
         itemCount: products.length,
+        clipBehavior: Clip.none,
         itemBuilder: (context, index) {
           final product = products[index];
           return Container(

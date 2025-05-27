@@ -312,11 +312,67 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   }
 
   List<VariantModel> _generateVariants() {
-    return [
-      VariantModel.dummy(type: 'Size', value: 'S'),
-      VariantModel.dummy(type: 'Size', value: 'M'),
-      VariantModel.dummy(type: 'Size', value: 'L'),
-      VariantModel.dummy(type: 'Size', value: 'XL'),
-    ];
+    final variants = <VariantModel>[];
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    // Size variants
+    final sizes = ['S', 'M', 'L', 'XL'];
+    for (var i = 0; i < sizes.length; i++) {
+      variants.add(VariantModel(
+        id: 'var_size_${sizes[i].toLowerCase()}_${timestamp + i}',
+        name: 'Size - ${sizes[i]}',
+        type: 'size',
+        value: sizes[i],
+        additionalPrice: null,
+        stock: 20 + i * 5,
+        sku: 'SKU-SIZE-${sizes[i]}',
+        imageUrl: null,
+        isActive: true,
+      ));
+    }
+
+    final colors = ['Red', 'Blue', 'Black', 'White'];
+    for (var i = 0; i < colors.length; i++) {
+      variants.add(VariantModel(
+        id: 'var_color_${colors[i].toLowerCase()}_${timestamp + 100 + i}',
+        name: 'Color - ${colors[i]}',
+        type: 'color',
+        value: colors[i],
+        additionalPrice: null,
+        stock: 15 + i * 3,
+        sku: 'SKU-COLOR-${colors[i]}',
+        imageUrl: null,
+        isActive: true,
+      ));
+    }
+
+    return variants;
+  }
+
+  static VariantModel dummy({
+    String? type,
+    String? value,
+    double? additionalPrice,
+  }) {
+    final typeStr = (type ?? 'size').toLowerCase();
+    final valueStr = value ?? 'M';
+    final random = Random();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    // Unique ID with random component
+    final uniqueId =
+        'var_${typeStr}_${valueStr}_${timestamp}_${random.nextInt(9999)}';
+
+    return VariantModel(
+      id: uniqueId,
+      name: '${typeStr[0].toUpperCase()}${typeStr.substring(1)} - $valueStr',
+      type: typeStr,
+      value: valueStr,
+      additionalPrice: additionalPrice,
+      stock: random.nextInt(50) + 10,
+      sku: 'SKU-$uniqueId',
+      imageUrl: null,
+      isActive: true,
+    );
   }
 }

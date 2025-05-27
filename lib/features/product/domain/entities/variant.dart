@@ -39,4 +39,6 @@ class Variant extends Equatable {
         imageUrl,
         isActive,
       ];
+  @override
+  String toString() => 'Variant($id, $type, $value)';
 }

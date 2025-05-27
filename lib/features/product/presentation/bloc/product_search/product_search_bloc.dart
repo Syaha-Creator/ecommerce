@@ -137,11 +137,11 @@ class ProductSearchBloc extends Bloc<ProductSearchEvent, ProductSearchState> {
 
     // Mock suggestions - replace with actual logic later
     final suggestions = [
-      '${query} terbaru',
-      '${query} murah',
-      '${query} original',
-      '${query} promo',
-      '${query} terlaris',
+      '$query terbaru',
+      '$query murah',
+      '$query original',
+      '$query promo',
+      '$query terlaris',
     ];
 
     return suggestions.take(5).toList();

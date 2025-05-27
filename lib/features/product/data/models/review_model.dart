@@ -84,7 +84,7 @@ class ReviewModel extends Review {
       productId: productId,
       userId: 'user_123',
       userName: 'John Doe',
-      userAvatar: 'https://via.placeholder.com/50x50',
+      userAvatar: null,
       rating: rating ?? 4.5,
       comment: comment ?? 'Great product! Highly recommended.',
       images: null,

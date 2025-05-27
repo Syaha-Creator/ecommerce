@@ -34,7 +34,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   late ProductListBloc _relatedProductsBloc;
   final _pageController = PageController();
   int _quantity = 1;
-  Variant? _selectedVariant;
+  final Map<String, Variant> _selectedVariants = {};
   bool _isFavorite = false; // TODO: Get from wishlist
   final Set<String> _favoriteProductIds = {}; // TODO: Get from wishlist
 
@@ -142,7 +142,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     return SliverAppBar(
       expandedHeight: 400,
       pinned: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.primary,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           children: [
@@ -353,10 +353,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           const SizedBox(height: 16),
           VariantSelector(
             variants: state.product.variants!,
-            selectedVariantId: _selectedVariant?.id,
-            onVariantSelected: (variant) {
+            selectedVariants: _selectedVariants,
+            onVariantSelected: (type, variant) {
               setState(() {
-                _selectedVariant = variant;
+                _selectedVariants[type] = variant;
               });
             },
           ),
@@ -385,6 +385,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   height: 1.5,
                 ),
+            textAlign: TextAlign.justify,
           ),
         ],
       ),
@@ -609,8 +610,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
   double _calculateFinalPrice(ProductDetailLoaded state) {
     var price = state.product.finalPrice;
-    if (_selectedVariant?.additionalPrice != null) {
-      price += _selectedVariant!.additionalPrice!;
+    for (var variant in _selectedVariants.values) {
+      if (variant.additionalPrice != null) {
+        price += variant.additionalPrice!;
+      }
     }
     return price;
   }
@@ -636,8 +639,29 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   void _addToCart() {
-    // TODO: Implement add to cart with selected variant and quantity
-    final product = (_productDetailBloc.state as ProductDetailLoaded).product;
+    final state = _productDetailBloc.state as ProductDetailLoaded;
+    final product = state.product;
+
+    // Check if product has variants and all are selected
+    if (product.variants != null && product.variants!.isNotEmpty) {
+      // Get all unique variant types
+      final variantTypes = product.variants!.map((v) => v.type).toSet();
+
+      // Check if all types have been selected
+      for (var type in variantTypes) {
+        if (!_selectedVariants.containsKey(type)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Please select $type'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          return;
+        }
+      }
+    }
+
+    // TODO: Implement add to cart with selected variants and quantity
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Added $_quantity ${product.name} to cart'),

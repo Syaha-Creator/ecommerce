@@ -4,17 +4,17 @@ import '../../domain/entities/variant.dart';
 
 class VariantSelector extends StatelessWidget {
   final List<Variant> variants;
-  final String? selectedVariantId;
-  final Function(Variant) onVariantSelected;
+  final Map<String, Variant> selectedVariants;
+  final Function(String type, Variant variant) onVariantSelected;
   final Map<String, List<Variant>> groupedVariants;
 
   VariantSelector({
     Key? key,
     required this.variants,
-    this.selectedVariantId,
+    required this.selectedVariants,
     required this.onVariantSelected,
   })  : groupedVariants = _groupVariantsByType(variants),
-        super(key: key);
+        super(key: key) {}
 
   static Map<String, List<Variant>> _groupVariantsByType(
       List<Variant> variants) {
@@ -22,6 +22,7 @@ class VariantSelector extends StatelessWidget {
     for (final variant in variants) {
       grouped.putIfAbsent(variant.type, () => []).add(variant);
     }
+
     return grouped;
   }
 
@@ -61,12 +62,15 @@ class VariantSelector extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: variants.map((variant) {
-            final isSelected = variant.id == selectedVariantId;
+            // DETAILED DEBUG
+            final selectedVariantForType = selectedVariants[type];
+            final isSelected = selectedVariantForType?.id == variant.id;
             final isAvailable = variant.inStock;
 
             if (type.toLowerCase() == 'color') {
               return _buildColorVariant(
                 context,
+                type: type,
                 variant: variant,
                 isSelected: isSelected,
                 isAvailable: isAvailable,
@@ -74,6 +78,7 @@ class VariantSelector extends StatelessWidget {
             } else {
               return _buildTextVariant(
                 context,
+                type: type,
                 variant: variant,
                 isSelected: isSelected,
                 isAvailable: isAvailable,
@@ -87,12 +92,17 @@ class VariantSelector extends StatelessWidget {
 
   Widget _buildColorVariant(
     BuildContext context, {
+    required String type,
     required Variant variant,
     required bool isSelected,
     required bool isAvailable,
   }) {
     return GestureDetector(
-      onTap: isAvailable ? () => onVariantSelected(variant) : null,
+      onTap: isAvailable
+          ? () {
+              onVariantSelected(type, variant);
+            }
+          : null,
       child: Container(
         width: 48,
         height: 48,
@@ -142,12 +152,17 @@ class VariantSelector extends StatelessWidget {
 
   Widget _buildTextVariant(
     BuildContext context, {
+    required String type,
     required Variant variant,
     required bool isSelected,
     required bool isAvailable,
   }) {
     return GestureDetector(
-      onTap: isAvailable ? () => onVariantSelected(variant) : null,
+      onTap: isAvailable
+          ? () {
+              onVariantSelected(type, variant);
+            }
+          : null,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
